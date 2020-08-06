@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+	<title>数据中心</title>
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layer.css">
+	<link rel="stylesheet" href="../css/flexible.css">
+	<link rel="stylesheet" href="../css/vant.css">
+	<link rel="stylesheet" href="../css/translateelement.css">
+	<script src="../js/jquery-3.2.1.min.js"></script>
+	<script src="../js/flexible.js"></script>
+	<script src="../js/layer.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<script src="../js/vant.min.js"></script>
+	<script src="../js/api.js"></script>
+	<script src="../js/scroll.js"></script>
+	<style>
+		html,body{
+			width: 100%;height: 100%;
+		}
+		.topimg{width: 100%;height: 5.52rem;background: url(../images/top_bg@2x.png)no-repeat;background-size: 100% 100%;font-size: .37rem;color: #fff;}
+		.header{padding: .99rem .4rem 0;display: flex;justify-content: space-between;}
+		.top_center{display: flex;align-items: center;justify-content: space-around;margin-top: .76rem;width: 100%;}
+		.top_center>div{text-align: center;width: 48%;}
+		.top_center .border{width: .05rem;height: 1.06rem;background: #fff;}
+
+		.banner{width: 92%;margin: -1.2rem auto 0;height: 2.534rem;border-radius: .15rem;overflow:hidden}
+		.banner .van-swipe{width: 100%;height: 100%;}
+		.banner .van-swipe img{width: 100%;height: 100%;border-radius: .15rem;}
+		.footer{width: 100%;height: 1.33rem;position: fixed;bottom: 0;display: flex;justify-content: space-between;align-items: center;background: #fff;box-shadow: 0 0 .17rem 0 rgba(18,44,84,0.05);}
+		.footer div{width: 25%;text-align: center;}
+		.footer div p{color:#999999;font-size: .32rem;}
+		
+		.main{padding-bottom: 3rem;}
+		.div1{width: 92%;margin: .4rem auto 0;background: #fff;box-shadow: 0px 0px 13px 0px rgba(18,44,84,0.05);font-size: .37rem;}
+		.div1 ul li{display: flex;justify-content: space-between;padding: .4rem;border-bottom: 1px solid #F9F9F9;height: .507rem;align-items: center;}
+		.div1 ul li:last-child{border-bottom: none;}
+		.div1 ul li span:nth-child(1){color: #999999;}
+		.div1 ul li span:nth-child(2){color: #999999;}
+		.div1 ul li span:nth-child(3){color: #999999;}
+		.canjia{width: 100%;height: 1.33rem;position: fixed;bottom: 1.33rem;display: flex;justify-content: center;align-items: center;background: #26AE9B;font-size: .4rem;color: #fff;}
+	</style>
+</head>
+<body>
+	<div id="app" v-cloak>
+		<div class="topimg">
+			<div class="header">
+				<img src="../images/logo.png" alt="" style="width: 3.64rem;height: .506rem;">
+				<span @click='location.href="play_rule.html"'>獎勵規則</span>
+			</div>
+			<div class="top_center">
+				<div>
+					<p><van-count-down style="font-size: .58rem;color: #fff;" :time="time" format="HH : mm : ss "/></p>
+					<p style="font-size: .35rem;padding-top: .1rem;">推薦冠軍開獎倒計時</p>
+				</div>
+				<div class="border"></div>
+				<div>
+					<p style="font-size: .58rem;">{{championFund}} ETH</p>
+					<p style="font-size: .35rem;padding-top: .1rem;">推薦冠軍獎池ETH數量</p>
+				</div>
+			</div>
+		</div>
+		<div class="banner">
+			<!-- <img src="../images/banner.png" alt=""> -->
+			<van-swipe :autoplay="3000" indicator-color="white">
+				<van-swipe-item v-for="(item,i) in banner" :key="i">
+					<img :src="item.pic" alt="">
+				</van-swipe-item>
+			</van-swipe>
+		</div>
+		<div class="main">
+			<div class="div1">
+				<p style="display: flex;justify-content: space-between;padding: .4rem;border-bottom: 1px solid #F9F9F9;">
+					<span>本輪排名</span>
+					<span>錢包地址</span>
+					<span>推薦人數</span>
+				</p>
+				<div id="myscroll" style="height: 6.6rem;overflow:hidden;">
+					<ul v-if="list!=''">
+						<!-- <li v-for="(item,index) in list">
+							<img v-if="item.types==1" src="../images/top_1.png" alt="" style="width: .52rem;height: .45rem;">
+							<img v-else-if="item.types==2" src="../images/top_2.png" alt="" style="width: .52rem;height: .45rem;">
+							<img v-else-if="item.types==3" src="../images/top_3.png" alt="" style="width: .52rem;height: .45rem;">
+							<span v-else-if="index<9">0{{index+1}}</span>
+							<span v-else>{{index+1}}</span>
+							<span>{{item.imtoken_address.substring(0, 8)+"******"+item.imtoken_address.substr(item.imtoken_address.length-8)}}</span>
+							<span>{{item.valid_num}}</span>
+						</li>
+						<li style="border-bottom: none;"></li>
+						<li style="border-bottom: none;"></li>
+						<li style="border-bottom: none;"></li> -->
+						<li v-for="(item,index) in list">
+							<img v-if="index==0" src="../images/top_1.png" alt="" style="width: .52rem;height: .45rem;">
+							<img v-else-if="index==1" src="../images/top_2.png" alt="" style="width: .52rem;height: .45rem;">
+							<img v-else-if="index==2" src="../images/top_3.png" alt="" style="width: .52rem;height: .45rem;">
+							<span v-else-if="index<10">0{{index+1}}</span>
+							<span v-else>{{index+1}}</span>
+							<span>{{item.imtoken_address.substring(0, 8)+"******"+item.imtoken_address.substr(item.imtoken_address.length-8)}}</span>
+							<span>{{item.valid_num}}</span>
+						</li>
+						<li style="border-bottom: none;"></li>
+						<li style="border-bottom: none;"></li>
+						<li style="border-bottom: none;"></li>
+					</ul>
+				</div>
+			</div>
+			<div class="div1">
+				<ul>
+					<li>
+						<span style="font-size: .4rem;font-weight: bold;color: #333333;">歷史獎勵</span>
+					</li>
+					<li>
+						<span>前一輪推薦冠軍獎勵</span>
+						<span v-if="champion.number">{{champion.number}} ETH</span>
+						<span v-else></span>
+					</li>
+					<li>
+						<span>前一輪最多推薦人數</span>
+						<span>{{champion.invite_count}}</span>
+					</li>
+					<li>
+						<span>前一輪冠軍錢包地址</span>
+						<span v-if="champion.imtoken_address">{{champion.imtoken_address.substring(0, 8)+"******"+champion.imtoken_address.substr(champion.imtoken_address.length-8)}}</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="canjia" @click="send1(paynum)">{{paynum}}ETH現在參加</div>
+		<div class="footer">
+			<div @click='location.href="index.html"'> 
+				<img src="../images/shuju_1@2x.png" alt="" style="width: .64rem;">
+				<p style="color: #35D1AA;">數據中心</p>
+			</div>
+			<div @click='location.href="money_helps.html"'>
+				<img src="../images/zlb_2@2x.png" alt="" style="width: .64rem;">
+				<p>助力幣</p>
+			</div>
+			<div @click='location.href="my.html"'>
+				<img src="../images/my_2@2x.png" alt="" style="width: .64rem;">
+				<p>個人中心</p>
+			</div>
+			<div @click='location.href="zichan.html"'>
+				<img src="../images/zichan_2@2x.png" alt="" style="width: .64rem;">
+				<p>資產</p>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	$(function(){
+		$('#myscroll').myScroll({
+			speed: 50, //数值越大，速度越慢
+			rowHeight: 50 //li的高度
+		});
+	});
+</script>
+<script>
+	var app=new Vue({
+		el:'#app',
+        data(){
+        	return {
+        		time: '',
+        		islogin:'',
+        		Toaddress:'',
+        		paynum:'',
+        		champion:'',
+        		championFund:'',
+        		list:[],
+        		banner:[]
+        	}	
+        	
+        },
+        created:function(){
+        	var ts = this
+        	function loca(name) {
+				if (!window.location.search) return null;
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+				var r = window.location.search.split("?")[1].match(reg);
+				if (r != null) return unescape(r[2]); return null;
+			}
+			var account = '';
+
+        	getAccount();
+        	
+        	async function getAccount() {
+				// ethereum.autoRefreshOnNetworkChange = false;
+				if("undefined" == typeof ethereum){
+					// vant.Toast.fail({ message: '请下载IMTOKEN或者TRUSTWALLET等去中心化的钱包或者在去中心化的浏览器环境中打开', duration: 2000 });
+					layer.open({
+						content: '請下載IMTOKEN或者麥子錢包等去中心化的錢包或者在去中心化的瀏覽器環境中打開',
+						skin: 'msg',
+						time: 2
+					});
+				}else{
+					const accounts = await ethereum.enable();
+					account = accounts[0];
+					console.log(accounts, '地址');
+					if (accounts.length > 0) {
+						localStorage.setItem("from", accounts[0])
+						$.ajax({
+							url: "/index/publics/doLogin",
+							type: "POST",
+							data: { address: accounts[0], invite_code: loca('invite_code') ? loca('invite_code') : '' },
+							dataType: 'json',
+							success: function (res) {
+								if (res.code !== 0) {
+									layer.open({ content: res.msg, skin: 'msg', time: 2 });
+								} else {
+									ts.islogin = true;
+									ts.address();
+									ts.indexdata();
+									ts.image();
+								}
+							}
+						})
+					} else {
+						vant.Toast.fail({ message: '请下载IMTOKEN或者TRUSTWALLET等去中心化的钱包或者在去中心化的浏览器环境中打开', duration: 2000 });
+						// updatas()
+					}
+					ethereum.on('accountsChanged', function (accounts) {
+					// Time to reload your interface with accounts[0]!
+						console.log(1) 
+					});
+				}				
+				
+			}
+
+			var nowtime=Math.round(new Date() / 1000);
+        	//当天中午时间
+        	var noon=Math.round(new Date(new Date(new Date().toLocaleDateString()).getTime()+12*60*60*1000) / 1000)
+        	//明天中午时间
+        	var tnoon=Math.round(new Date(new Date(new Date().toLocaleDateString()).getTime()+36*60*60*1000) / 1000)
+
+        	if(nowtime>noon){
+        		ts.time = (tnoon-nowtime)*1000;
+        	}else{
+        		ts.time = (noon-nowtime)*1000
+        	}
+ 	
+        },
+        methods:{
+        	address(){
+        		var ts = this;
+        		$.ajax({
+					url: api + "index/member/rechargeAddress",
+					type: "POST",
+					data: {},
+					dataType: 'json',
+					success: function(res) {
+						console.log(res);
+						if(res.code=='0'){
+							ts.Toaddress = res.address;
+							ts.paynum = res.paynum;
+						}					
+					}
+				})
+        	},
+        	image(){
+        		var ts = this;
+        		$.ajax({
+					url: api + "index/article/image",
+					type: "POST",
+					data: {},
+					dataType: 'json',
+					success: function(res) {
+						console.log(res);
+						ts.banner = res.info.data;
+					}
+				})
+        	},
+        	indexdata(){
+        		var ts = this;
+        		$.ajax({
+					url: api + "index/publics/indexdata",
+					type: "POST",
+					data: {},
+					dataType: 'json',
+					success: function(res) {
+						console.log(res);
+						if(res.code=='0'){
+							ts.champion = res.champion;
+							ts.championFund = res.championFund;
+							ts.list = res.list;
+						}				
+					}
+				})
+        	},
+        	send1(val) {
+        		var ts = this;
+				$.ajax({
+					url: api + "index/index/checkRecharge",
+					type: "POST",
+					data: {},
+					dataType: 'json',
+					success: function(res) {
+						console.log(res)
+						if(res.code=='0'){
+							if(window.ethereum) {
+								window.web3 = new Web3(ethereum);
+								try {
+									ethereum.enable();
+									var gasnum = 210000, gasPrice = 50000000000;
+									var params = [{
+										"from": web3.eth.accounts[0],
+										"to": ts.Toaddress,
+										"gas": gasnum.toString(16),
+										"gasPrice": gasPrice.toString(16),
+										"value": '0x'+((Number(val)* 1000000000000000000).toString(16))
+										//0x2386F26FC10000 //10000000000000000,
+									}]
+										ethereum.sendAsync({
+										  method: 'eth_sendTransaction',
+										  params: params,
+										  //from: web3.eth.accounts[0], // Provide the user's account to use.
+										}, function (err, result) {
+										console.log(result,'result');
+											if(result){ 
+												if(result.result){
+													ts.rechargeRecord(val);
+													vant.Toast.success({ message: "充值成功", duration: 2600 });
+												}else{
+													vant.Toast.fail({ message: "充值失败", duration: 2600 });
+												}
+											}else{
+												vant.Toast.fail({ message: "充值失败", duration: 2600 });
+											}
+										})					
+								}catch (error) {
+									console.log(error, "catch (error)");
+									vant.Toast.fail({ message: "充值失败33333", duration: 1600 });
+									// updatas()
+								}
+							}
+						}else{
+							layer.open({ content: res.msg, skin: 'msg', time: 2 });
+						}
+					}
+				})
+				
+        	},
+    //  		send1(){
+    //  			var ts = this;
+    //  			$.ajax({
+				// 	url: api + "index/index/tobetGame",
+				// 	type: "POST",
+				// 	data: {number:ts.paynum},
+				// 	dataType: 'json',
+				// 	success: function(res) {
+				// 		console.log(res);
+				// 		layer.open({
+				// 			content: res.msg,
+				// 			skin: 'msg',
+				// 			time: 2
+				// 		});
+				// 		// if(res.code=='0'){
+				// 		// }				
+				// 	}
+				// })			
+    //  		}  
+			rechargeRecord(val){
+    			$.ajax({
+				 	url: api + "index/index/rechargeRecord",
+				 	type: "POST",
+				 	data: {number:val},
+				 	dataType: 'json',
+				 	success: function(res) {
+				 		console.log('rechargeRecord');				
+				 		console.log(res);	
+				 	}
+				 })			
+    		}   
+        },
+        mounted:function(){
+        }
+	})
+</script>
+</html>

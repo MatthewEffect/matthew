@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+	<title>助力幣</title>
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layer.css">
+	<link rel="stylesheet" href="../css/flexible.css">
+	<link rel="stylesheet" href="../css/vant.css">
+	<script src="../js/jquery-3.2.1.min.js"></script>
+	<script src="../js/flexible.js"></script>
+	<script src="../js/layer.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<script src="../js/vant.min.js"></script>
+	<script src="../js/api.js"></script>
+	<style>
+		html,body{
+			width: 100%;height: 100%;
+		}
+		.topimg{width: 100%;height: 5rem;background: url(../images/money_bg@2x.png)no-repeat;background-size: 100% 100%;font-size: .37rem;color: #fff;}
+		.topimg>div{padding: .4rem 0 0 .4rem;font-size: .43rem;}
+		.PMT_bg{background: url(../images/PMT_bg@2x.png)no-repeat;background-size: 100% 100%;display: flex;align-items: center;height: .6rem;padding: 0 .5rem}
+		.PMT_bg span{font-size: .32rem;margin-right: .4rem;line-height: .6rem;}
+		.PMT_bg img{width: .15rem;}
+		.footer{width: 100%;height: 1.33rem;position: fixed;bottom: 0;display: flex;justify-content: space-between;align-items: center;background: #fff;box-shadow: 0 0 .17rem 0 rgba(18,44,84,0.05);}
+		.footer div{width: 25%;text-align: center;}
+		.footer div p{color:#999999;font-size: .32rem;}
+		
+		.main{width: 92%;margin: 0 auto;padding-bottom: 1.5rem;}
+		.main1{font-size: .37rem;padding: .3rem 0;}
+		.main2{font-size: .4rem;padding: .3rem 0;}
+		.main2>div{display: flex;align-items: center;}
+		.main2>div span{color:#999999}
+		.main2>div input{width:55%;border:1px solid #EEEEEE;padding: .25rem;border-radius: .1rem;}
+		.btn{display: flex;justify-content: space-between;margin-top: .4rem;}
+		.btn>div{width: 48%;height:1.32rem;display: flex;align-items: center;justify-content: center;font-size: .4rem;}
+		.btn div:nth-child(1){border: 1px solid #2BBBAB;border-radius: .12rem;}
+		.btn div:nth-child(2){background:#2BBBAB;border-radius: .12rem;}
+	</style>
+</head>
+<body>
+	<div id="app" v-cloak>
+		<div class="topimg">
+			<div style="font-size: .48rem;font-weight: bold;padding-top: 1.2rem;" class="notranslate">PMT（TOKEN）</div>
+			<div style="display: flex;justify-content: space-between;align-items: center;padding: .5rem 0 .1rem .4rem;">
+				<span>第{{info.period}}期第{{info.take_turns}}輪助力</span>
+				<div class="PMT_bg" @click='location.href="PMT_rule.html"'>
+					<span>PMT規則</span>
+					<img src="../images/you@2x.png" alt="">
+				</div>	
+			</div>
+			<div v-if="info.take_turns_pmt">本輪PMT剩餘：{{info.take_turns_pmt}}</div>
+			<div v-else>本輪PMT剩餘：0</div>
+		</div>
+		<div class="main">
+			<div class="main1">
+				<p>PMT超級獎池</p>
+				<p style="text-align: center;font-size: .4rem;font-weight: bold;margin-top: .52rem;">當前PMT價格：${{info.pmtQuotation}}</p>
+				<div v-if="time" style="width:92%;height:3rem;margin: .4rem auto 0;background: #E9F9F7;text-align: center;font-size: .4rem;border-radius: .15rem;">
+					<p style="padding-top: .8rem;">獎池剩餘ETH：{{info.aaa}}</p>
+					<!-- <p style="padding: .25rem 0;">本輪已結束</p> -->
+					<p style="display: flex;justify-content: center;padding-top: .5rem;">
+					<!-- <span>兌換時間剩餘：</span> -->
+						<van-count-down :time="time" format="DD 天 HH 時 mm 分 ss 秒"/></van-count-down>
+					</p>
+				</div>
+				<div v-else style="width:92%;height:3rem;margin: .4rem auto 0;background: #E9F9F7;font-size: .48rem;border-radius: .15rem;display: flex;justify-content: center;align-items: center;text-align: center;">獎池剩餘ETH：{{info.aaa}}</div>
+				<p style="text-align: center;color: #999999;margin-top: .25rem;">當前ETH價格：${{info.ethQuotation}}</p>
+			</div>
+			<div class="main2">
+				<div>
+					<span style="width: 40%;">兌換PMT數量：</span>
+					<input type="text" v-model="number">
+				</div>
+				<div style="margin: .2rem 0;">
+					<span style="width: 40%;">我的PMT數量：</span>
+					<span style="width: 60%;color: #333333;">{{info.myPmt}}</span>
+				</div>
+				<div>
+					<span style="width: 40%;">可兌換ETH：</span>
+					<div style="width: 60%;display: flex;justify-content: space-between;align-items: center;">
+						<span style="color: #333333;">{{info.canExchange}}</span>
+						<div style="border:1px solid #26AE9B;color: #26AE9B;border-radius: .1rem;padding: .1rem .2rem;" @click='location.href="PMT_detail.html"'>
+							PMT明細
+						</div>
+					</div>
+				</div>
+				<div class="btn">
+					<div @click='location.href="Reciprocal.html"'>
+						<img src="../images/btn_left@2x.png" alt="" style="width: .96rem;">
+						<span style="color: #2BBBAB;padding-left: .43rem;">互轉</span>
+					</div>
+					<div @click="duihuan">
+						<img src="../images/btn_right@2x.png" alt="" style="width: .96rem;">
+						<span style="color: #fff;padding-left: .43rem;">兌換</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<div @click='location.href="index.html"'>
+				<img src="../images/shuju_2@2x.png" alt="" style="width: .64rem;">
+				<p>數據中心</p>
+			</div>
+			<div @click='location.href="money_helps.html"'>
+				<img src="../images/zlb_1@2x.png" alt="" style="width: .64rem;">
+				<p style="color: #35D1AA;">助力幣</p>
+			</div>
+			<div @click='location.href="my.html"'>
+				<img src="../images/my_2@2x.png" alt="" style="width: .64rem;">
+				<p>個人中心</p>
+			</div>
+			<div @click='location.href="zichan.html"'>
+				<img src="../images/zichan_2@2x.png" alt="" style="width: .64rem;">
+				<p>資產</p>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	var app=new Vue({
+		el:'#app',
+        data(){
+        	return{
+        		info:'',
+        		time:'',
+        		number:''
+        	}
+        },
+        created:function(){
+        	var ts = this;
+        	$.ajax({
+				url: api + "index/pmt/index",
+				type: "POST",
+				data: {},
+				dataType: 'json',
+				success: function(res) {
+					console.log(res);
+					if(res.code=='0'){
+						ts.info = res.info;
+						ts.time = res.info.time*1000;
+					}
+				}
+			})
+        },
+        methods:{
+        	duihuan(){
+        		var ts = this;
+        		if(!ts.number){
+        			layer.open({
+						content: '請輸入兌換數量',
+						skin: 'msg',
+						time: 2
+					});
+					return;
+        		}
+        		$.ajax({
+					url: api + "index/pmt/exchangeEth",
+					type: "POST",
+					data: {number:ts.number},
+					dataType: 'json',
+					success: function(res) {
+						console.log(res);
+						layer.open({
+							content: res.msg,
+							skin: 'msg',
+							time: 2
+						});
+						if(res.code=='0'){
+							setTimeout(function(){
+								location.reload();
+							},1500)
+						}
+					}
+				})
+        	}
+        },
+        mounted:function(){
+        }
+	})
+</script>
+</html>

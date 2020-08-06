@@ -1,0 +1,27 @@
+*{margin: 0;padding: 0;}
+img { border: 0 none;vertical-align: center; width: 100%;}
+ul, li { list-style-type: none;}
+h1, h2, h3, h4, h5, h6 { font-size: 62.5%; }
+body, input, select, button, textarea { font-family:"微软雅黑";} /*设置默认字体*/
+button { cursor: pointer; }
+input,button,select,textarea{ outline:none; }
+i, em, cite { font-style: normal; }
+aside section,.body{display:block; margin:0 auto;}
+a, a:link { color: #000; text-decoration: none; }/*设置a标签基本样式与伪类选择器设置*/
+a:visited {}
+a:active, a:hover { text-decoration: none; color:#d00000; }
+a:focus { outline: none; } 
+
+.clear:after {
+	content: '';
+	display: block;
+	height: 0;
+	overflow: hidden;
+	clear:both;
+}
+[v-cloak] {
+   display:none;
+}
+html,body{
+	background: #fff;
+}

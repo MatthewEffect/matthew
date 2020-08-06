@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+	<title>提幣</title>
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layer.css">
+	<link rel="stylesheet" href="../css/flexible.css">
+	<script src="../js/jquery-3.2.1.min.js"></script>
+	<script src="../js/layer.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<script src="../js/flexible.js"></script>
+	<script src="../js/api.js"></script>
+	<style>
+		html,body{
+			width: 100%;height: 100%;color: #222222;
+		}
+		.top{height: 1.76rem;background: #26AE9B;}
+		.header{display: flex;justify-content: center;align-items: center;
+			position: relative;height: 1.17rem;
+		}
+		.header img{position: absolute;width: 0.5rem;left: .3rem;}
+		.header span{color: #fff;;font-size: .48rem;}
+		.main{background: #fff;padding: .08rem .4rem 0;margin-top: -.59rem;font-size: .4rem;border-top-left-radius:.53rem;
+			border-top-right-radius:.53rem;}
+		.main p input{border:none;padding: .35rem 0;width: 100%;}
+		.queding{background: #26AE9B;color: #fff;border-radius: .15rem;height: 1.33rem;display: flex;justify-content: center;align-items: center;margin-top: 2.02rem;font-size: .4rem;}
+	</style>
+</head>
+<body>
+	<div id="app" v-cloak>
+		<div class="top">
+			<div class="header">
+				<img src="../images/fh_button_4_24@2x.png" alt="" onclick="history.back(-1)">
+				<span>提幣</span>
+				<span style="position: absolute;right: .3rem;font-size: .35rem;" @click='location.href="Withdraw_record.html"'>提幣記錄</span>
+			</div>
+		</div>		
+		<div class="main">
+			<p style="padding-top: .2rem;">地址</p>
+			<p style="border-bottom: 1px solid #E5E5E5;"><input type="text" placeholder="請輸入或長按粘貼地址" v-model="address" readonly="readonly"></p>
+			<p style="padding-top: .35rem;">數量</p>
+			<p style="border-bottom: 1px solid #E5E5E5;position: relative;display: flex;align-items: center;">
+				<input style="width:90%;" type="number" placeholder="請輸入需要提出的數量" v-model="number">
+				<span style="position: absolute;color: #26AE9B;right:0;" @click="all">全部</span>
+			</p>
+			<p style="color: #26AE9B;">實際到賬{{Number(receipt).toFixed(8)}}ETH</p>
+			<p style="padding-top: .35rem;">手續費</p>
+			<p style="border-bottom: 1px solid #E5E5E5;position: relative;display: flex;align-items: center;">
+				<input type="text" :placeholder="text3" readonly="readonly">
+				<span style="position: absolute;color: #26AE9B;right:0;">ETH</span>
+			</p>
+			<div class="queding" @click="sure">確認轉出</div>
+		</div>
+	</div>
+</body>
+<script>
+	var app=new Vue({
+		el:'#app',
+        data(){
+        	return{
+        		address:'',
+        		number:'',
+				text3:'',
+				yue:'',
+				withdraw_min:'',
+				fee:'',
+				receipt:0
+        	}
+        },
+        watch: {
+			number() {
+				var ts = this;
+				console.log(ts.number)
+				console.log(ts.fee)
+				ts.receipt = (Number(ts.number)-Number(ts.fee));
+				console.log(ts.receipt)
+			}
+			
+		},
+        created:function(){
+        	var ts = this;
+        	
+		    $.ajax({
+				url: "/index/MyWallet/withdraw",
+				type: "get",
+				data: {},
+				dataType: 'json',
+				success: function (res) {
+					console.log(res)
+					if(res.code=='0'){
+						ts.info = res.info;
+						ts.yue = res.info.eth;
+						ts.withdraw_min = res.info.withdraw_min;
+						ts.fee = res.info.change;
+						ts.address = res.info.imtoken_address;
+					    ts.text3='即將扣除'+res.info.change+'手續費'						
+					}
+				}
+			})
+        },
+        methods:{
+     //    	onSearch(e){
+     //    		var ts = this;
+     //    		ts.ipt = e.target.value;
+     //    		if(e.target.value<ts.withdraw_min){
+     //    			layer.open({
+					// 	content: '最低提币数量'+ts.withdraw_min,
+					// 	skin: 'msg',
+					// 	time: 2
+					// });
+     //    		}else{
+     //    			layer.open({
+					// 	content: '账户余额不足',
+					// 	skin: 'msg',
+					// 	time: 2
+					// });
+     //    		}        		
+     //    	},
+        	// ipt(event){
+        	// 	var ts = this;
+        	// 	ts.receipt = ts.ipt - event.currentTarget.value;
+        	// },
+        	all(){
+        		var ts = this;
+        		ts.number = ts.yue;
+        	},
+        	sure(){
+        		var ts = this;
+        		$.ajax({
+					url: "/index/mywallet/withdraw",
+					type: "POST",
+					data: {
+						address:ts.address,
+						number:ts.number
+					},
+					dataType: 'json',
+					success: function (res) {
+						console.log(res)
+						layer.open({
+							content: res.msg,
+							skin: 'msg',
+							time: 2
+						});
+					}
+				})
+        	}
+        },
+        mounted:function(){
+        	
+        }
+	})
+</script>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+	<title>PMT明細</title>
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layer.css">
+	<link rel="stylesheet" href="../css/flexible.css">
+	<link rel="stylesheet" href="../css/vant.css">
+	<script src="../js/jquery-3.2.1.min.js"></script>
+	<script src="../js/layer.js"></script>
+	<script src="../js/vue.min.js"></script>
+	<script src="../js/flexible.js"></script>
+	<script src="../js/api.js"></script>
+	<script src="../js/vant.min.js"></script>
+	<style>
+		html,body{
+			width: 100%;height: 100%;color: #222222;
+		}
+		.top{height: 1.76rem;background: #26AE9B;}
+		.header{display: flex;justify-content: center;align-items: center;
+			position: relative;height: 1.17rem;
+		}
+		.header img{position: absolute;width: 0.5rem;left: .3rem;}
+		.header span{color: #fff;;font-size: .48rem;}
+		.main{background: #fff;padding: .08rem .4rem 0;margin-top: -.59rem;font-size: .4rem;border-top-left-radius:.53rem;
+			border-top-right-radius:.53rem;}
+		.main ul li{border-bottom: 1px solid #E5E5E5;padding: .52rem 0 .4rem;}
+		.main ul li{display: flex;justify-content: space-between;}
+	</style>
+</head>
+<body>
+	<div id="app" v-cloak>
+		<div class="top">
+			<div class="header">
+				<img src="../images/fh_button_4_24@2x.png" alt="" onclick="history.back(-1)">
+				<span>PMT明細</span>
+			</div>
+		</div>		
+		<div class="main">
+			<ul v-if="list.length!=0">
+				<li v-for="(item,index) in list">
+					<div>
+						<p v-if="item.types==10">PMT奖励</p>
+						<p v-if="item.types==11">PMT兑换</p>
+						<p v-if="item.types==14">清空助力币</p>
+						<p v-if="item.types==15">PMT互转</p>
+						<p style="color: #999999;">{{item.create_time}}</p>
+					</div>
+					<div>
+						<p style="color: #26AE9B;" v-if="item.status==1">+{{item.number}}</p>
+						<p style="color: #BB2B2B;" v-if="item.status==2">-{{item.number}}</p>
+					</div>
+				</li>
+				<!-- <li>
+					<div>
+						<p>轉入</p>
+						<p style="color: #999999;">2020-07-17 16:30:42</p>
+					</div>
+					<div>
+						<p style="color: #BB2B2B;">-2.12345678</p>
+					</div>
+				</li> -->
+			</ul>
+			<ul v-else>
+				<van-empty description="暫無記錄" /></van-empty>
+			</ul>
+		</div>
+	</div>
+</body>
+<script>
+	var app=new Vue({
+		el:'#app',
+        data(){
+        	return{
+        		list:[]
+        	}
+        },
+        created:function(){
+        	var ts = this;
+        	$.ajax({
+				url: "/index/pmt/pmtList",
+				type: "POST",
+				data: {},
+				dataType: 'json',
+				success: function (res) {
+					console.log(res)
+					if(res.code=='0'){
+						ts.list = res.info.data;						
+					}
+				}
+			})
+        	
+        },
+        methods:{
+        	
+        },
+        mounted:function(){
+        	
+        }
+	})
+</script>
+</html>
